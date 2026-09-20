@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PerfilAlumno.Models;
+using PerfilAlumno.Views;
 
 namespace PerfilAlumno.ViewModels
 {
@@ -20,6 +21,7 @@ namespace PerfilAlumno.ViewModels
             };
 
             GuardarCommand = new Command(Guardar);
+            VerDetalleCommand = new Command(async () => await VerDetalle());
         }
 
         public string Nombre
@@ -63,12 +65,13 @@ namespace PerfilAlumno.ViewModels
         }
 
         public ICommand GuardarCommand { get; }
+        public ICommand VerDetalleCommand { get; }
 
         private async void Guardar()
         {
             if (string.IsNullOrWhiteSpace(Nombre))
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await Application.Current!.MainPage!.DisplayAlert(
                     "Error",
                     "El nombre no puede estar vacío.",
                     "Aceptar");
@@ -76,10 +79,39 @@ namespace PerfilAlumno.ViewModels
                 return;
             }
 
-            await Application.Current.MainPage.DisplayAlert(
+            await Application.Current!.MainPage!.DisplayAlert(
                 "Perfil",
                 "Los datos fueron guardados correctamente.",
                 "Aceptar");
+        }
+
+        private async Task VerDetalle()
+        {
+            // Validamos los parámetros 
+            if (string.IsNullOrWhiteSpace(Nombre))
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "Debe ingresar un nombre antes de continuar.",
+                    "Aceptar");
+
+                return;
+            }
+
+            if (Edad <= 0)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "La edad debe ser mayor a 0.",
+                    "Aceptar");
+
+                return;
+            }
+
+            await Shell.Current.GoToAsync(
+                $"{nameof(DetallePerfilPage)}" +
+                $"?nombre={Uri.EscapeDataString(Nombre)}" +
+                $"&edad={Edad}");
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

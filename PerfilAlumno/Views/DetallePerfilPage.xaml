@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PerfilAlumno.Views.DetallePerfilPage"
+             Title="Detalle del perfil"
+             BackgroundColor="#F4F7F6">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30"
+            Spacing="20"
+            VerticalOptions="Center">
+
+            <Label
+                Text="Detalle del alumno"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="#1B5E20" />
+
+            <Border
+                Padding="25"
+                BackgroundColor="White"
+                Stroke="#DDE5E1"
+                StrokeShape="RoundRectangle 15">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <Label
+                        Text="Nombre"
+                        FontSize="14"
+                        TextColor="#757575" />
+
+                    <Label
+                        Text="{Binding Nombre}"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="#212121" />
+
+                    <Label
+                        Text="Edad"
+                        FontSize="14"
+                        TextColor="#757575" />
+
+                    <Label
+                        Text="{Binding Edad}"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="#212121" />
+
+                </VerticalStackLayout>
+
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
