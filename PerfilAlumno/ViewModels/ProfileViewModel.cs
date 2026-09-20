@@ -1,0 +1,95 @@
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using PerfilAlumno.Models;
+
+namespace PerfilAlumno.ViewModels
+{
+    public class ProfileViewModel : INotifyPropertyChanged
+    {
+        private UserProfile perfil;
+
+        public ProfileViewModel()
+        {
+            perfil = new UserProfile
+            {
+                Nombre = "Victoria",
+                Edad = 37,
+                Descripcion = "Estudiante de la Tecnicatura Universitaria en Programación de Sistemas.",
+                ImagenPerfil = "dotnet_bot.png"
+            };
+
+            GuardarCommand = new Command(Guardar);
+        }
+
+        public string Nombre
+        {
+            get => perfil.Nombre;
+            set
+            {
+                perfil.Nombre = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int Edad
+        {
+            get => perfil.Edad;
+            set
+            {
+                perfil.Edad = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Descripcion
+        {
+            get => perfil.Descripcion;
+            set
+            {
+                perfil.Descripcion = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ImagenPerfil
+        {
+            get => perfil.ImagenPerfil;
+            set
+            {
+                perfil.ImagenPerfil = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand GuardarCommand { get; }
+
+        private async void Guardar()
+        {
+            if (string.IsNullOrWhiteSpace(Nombre))
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "El nombre no puede estar vacío.",
+                    "Aceptar");
+
+                return;
+            }
+
+            await Application.Current.MainPage.DisplayAlert(
+                "Perfil",
+                "Los datos fueron guardados correctamente.",
+                "Aceptar");
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(
+            [CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}
