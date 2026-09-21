@@ -43,3 +43,15 @@ Antes de navegar se verifica que:
 - La edad sea mayor a cero.
 
 De esta forma se evita enviar parámetros incorrectos a la pantalla de detalle.
+
+## Notificación visual
+
+Como extensión de la actividad, se integró `CommunityToolkit.Maui` para mostrar una notificación visual mediante un `Snackbar`.
+
+Cuando el usuario selecciona **Ver detalle** y los datos ingresados son válidos, se muestra el mensaje:
+
+**"Datos validados correctamente. Abriendo detalle..."**
+
+Luego se realiza la navegación hacia `DetallePerfilPage`.
+
+Para permitir el funcionamiento del `Snackbar` en Windows, se configuró `CommunityToolkit.Maui` en `MauiProgram.cs` y se realizaron las configuraciones necesarias en `Package.appxmanifest`.

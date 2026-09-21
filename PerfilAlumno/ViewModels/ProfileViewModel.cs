@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PerfilAlumno.Models;
 using PerfilAlumno.Views;
+using CommunityToolkit.Maui.Alerts;
 
 namespace PerfilAlumno.ViewModels
 {
@@ -107,6 +108,13 @@ namespace PerfilAlumno.ViewModels
 
                 return;
             }
+
+            // Mostramos una notificación visual indicando
+            // que los datos fueron validados correctamente.
+            var snackbar = Snackbar.Make(
+                "Datos validados correctamente. Abriendo detalle...");
+
+            await snackbar.Show();
 
             await Shell.Current.GoToAsync(
                 $"{nameof(DetallePerfilPage)}" +
