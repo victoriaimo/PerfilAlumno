@@ -70,7 +70,7 @@ namespace PerfilAlumno.ViewModels
                     }
                 }
 
-                MensajeEstado = "Usuarios cargados correctamente.";
+                MensajeEstado = "HTTP 200: Usuarios cargados correctamente.";
             }
             catch (HttpRequestException)
             {
