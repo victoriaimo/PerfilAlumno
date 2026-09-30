@@ -23,6 +23,7 @@ namespace PerfilAlumno.ViewModels
 
             GuardarCommand = new Command(Guardar);
             VerDetalleCommand = new Command(async () => await VerDetalle());
+            VerUsuariosCommand = new Command(async () => await VerUsuarios());
         }
 
         public string Nombre
@@ -67,6 +68,7 @@ namespace PerfilAlumno.ViewModels
 
         public ICommand GuardarCommand { get; }
         public ICommand VerDetalleCommand { get; }
+        public ICommand VerUsuariosCommand { get; }
 
         private async void Guardar()
         {
@@ -88,7 +90,6 @@ namespace PerfilAlumno.ViewModels
 
         private async Task VerDetalle()
         {
-            // Validamos los parámetros 
             if (string.IsNullOrWhiteSpace(Nombre))
             {
                 await Application.Current!.MainPage!.DisplayAlert(
@@ -109,8 +110,6 @@ namespace PerfilAlumno.ViewModels
                 return;
             }
 
-            // Mostramos una notificación visual indicando
-            // que los datos fueron validados correctamente.
             var snackbar = Snackbar.Make(
                 "Datos validados correctamente. Abriendo detalle...");
 
@@ -120,6 +119,11 @@ namespace PerfilAlumno.ViewModels
                 $"{nameof(DetallePerfilPage)}" +
                 $"?nombre={Uri.EscapeDataString(Nombre)}" +
                 $"&edad={Edad}");
+        }
+
+        private async Task VerUsuarios()
+        {
+            await Shell.Current.GoToAsync(nameof(UsuariosPage));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

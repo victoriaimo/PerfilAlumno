@@ -11,6 +11,10 @@ namespace PerfilAlumno
             Routing.RegisterRoute(
                 nameof(DetallePerfilPage),
                 typeof(DetallePerfilPage));
+
+            Routing.RegisterRoute(
+                nameof(UsuariosPage),
+                typeof(UsuariosPage));
         }
     }
 }
