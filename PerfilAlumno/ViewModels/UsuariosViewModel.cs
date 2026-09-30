@@ -2,6 +2,7 @@
 using PerfilAlumno.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -47,8 +48,17 @@ namespace PerfilAlumno.ViewModels
             {
                 MensajeEstado = "Cargando usuarios...";
 
-                var usuarios = await _httpClient.GetFromJsonAsync<List<UsuarioApi>>(
+                var response = await _httpClient.GetAsync(
                     "https://jsonplaceholder.typicode.com/users");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    MensajeEstado = ObtenerMensajeErrorHttp(response.StatusCode);
+                    return;
+                }
+
+                var usuarios =
+                    await response.Content.ReadFromJsonAsync<List<UsuarioApi>>();
 
                 Usuarios.Clear();
 
@@ -64,12 +74,37 @@ namespace PerfilAlumno.ViewModels
             }
             catch (HttpRequestException)
             {
-                MensajeEstado = "Error de conexión o respuesta del servidor.";
+                MensajeEstado =
+                    "Error de conexión. Verifique su conexión a Internet.";
+            }
+            catch (TaskCanceledException)
+            {
+                MensajeEstado =
+                    "La solicitud tardó demasiado tiempo.";
             }
             catch (Exception)
             {
-                MensajeEstado = "Ocurrió un error al cargar los usuarios.";
+                MensajeEstado =
+                    "Ocurrió un error inesperado al cargar los usuarios.";
             }
+        }
+
+        private string ObtenerMensajeErrorHttp(HttpStatusCode statusCode)
+        {
+            return statusCode switch
+            {
+                HttpStatusCode.BadRequest =>
+                    "Error HTTP 400: solicitud incorrecta.",
+
+                HttpStatusCode.NotFound =>
+                    "Error HTTP 404: recurso no encontrado.",
+
+                HttpStatusCode.InternalServerError =>
+                    "Error HTTP 500: error interno del servidor.",
+
+                _ =>
+                    $"Error HTTP {(int)statusCode}: no se pudieron obtener los datos."
+            };
         }
 
         private async Task VerDetalleUsuario(UsuarioApi usuario)
