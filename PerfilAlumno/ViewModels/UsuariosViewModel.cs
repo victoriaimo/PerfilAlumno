@@ -1,4 +1,5 @@
 ﻿using PerfilAlumno.Models;
+using PerfilAlumno.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Http.Json;
@@ -26,11 +27,18 @@ namespace PerfilAlumno.ViewModels
         }
 
         public ICommand CargarUsuariosCommand { get; }
+        public ICommand VerDetalleUsuarioCommand { get; }
 
         public UsuariosViewModel()
         {
             _httpClient = new HttpClient();
-            CargarUsuariosCommand = new Command(async () => await CargarUsuariosAsync());
+
+            CargarUsuariosCommand =
+                new Command(async () => await CargarUsuariosAsync());
+
+            VerDetalleUsuarioCommand =
+                new Command<UsuarioApi>(async usuario =>
+                    await VerDetalleUsuario(usuario));
         }
 
         private async Task CargarUsuariosAsync()
@@ -64,11 +72,26 @@ namespace PerfilAlumno.ViewModels
             }
         }
 
+        private async Task VerDetalleUsuario(UsuarioApi usuario)
+        {
+            if (usuario == null)
+                return;
+
+            await Shell.Current.GoToAsync(
+                $"{nameof(DetalleUsuarioPage)}" +
+                $"?nombre={Uri.EscapeDataString(usuario.Name)}" +
+                $"&email={Uri.EscapeDataString(usuario.Email)}" +
+                $"&telefono={Uri.EscapeDataString(usuario.Phone)}");
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        protected void OnPropertyChanged(
+            [CallerMemberName] string? propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PerfilAlumno.Views.UsuariosPage"
+             x:Name="PaginaUsuarios"
              Title="Usuarios">
 
     <Grid Padding="20"
@@ -22,9 +23,18 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
+
                     <Frame Margin="0,5"
                            Padding="15">
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference PaginaUsuarios}, Path=BindingContext.VerDetalleUsuarioCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
                         <VerticalStackLayout Spacing="5">
+
                             <Label Text="{Binding Name}"
                                    FontAttributes="Bold"
                                    FontSize="18" />
@@ -32,8 +42,11 @@
                             <Label Text="{Binding Email}" />
 
                             <Label Text="{Binding Phone}" />
+
                         </VerticalStackLayout>
+
                     </Frame>
+
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
