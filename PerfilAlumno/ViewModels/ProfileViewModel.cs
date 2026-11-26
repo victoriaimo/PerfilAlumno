@@ -339,6 +339,17 @@ namespace PerfilAlumno.ViewModels
             {
                 if (!await _service.GuardarPerfilAsync(perfil))
                     return;
+                try
+                {
+                    if (Vibration.Default.IsSupported)
+                    {
+                        Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(200));
+                    }
+                }
+                catch (Exception)
+                {
+                    // La vibración no debe impedir el guardado del perfil.
+                }
 
                 await Application.Current!.MainPage!.DisplayAlert(
                     "Perfil",
