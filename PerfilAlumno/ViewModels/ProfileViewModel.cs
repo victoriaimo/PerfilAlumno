@@ -315,21 +315,13 @@ namespace PerfilAlumno.ViewModels
 
         private async Task Guardar()
         {
-            if (string.IsNullOrWhiteSpace(Nombre))
+            var error = _service.ObtenerErrorValidacion(perfil);
+
+            if (error != null)
             {
                 await Application.Current!.MainPage!.DisplayAlert(
                     "Error",
-                    "El nombre no puede estar vacío.",
-                    "Aceptar");
-
-                return;
-            }
-
-            if (Edad <= 0)
-            {
-                await Application.Current!.MainPage!.DisplayAlert(
-                    "Error",
-                    "La edad debe ser mayor a 0.",
+                    error,
                     "Aceptar");
 
                 return;
@@ -339,6 +331,7 @@ namespace PerfilAlumno.ViewModels
             {
                 if (!await _service.GuardarPerfilAsync(perfil))
                     return;
+
                 try
                 {
                     if (Vibration.Default.IsSupported)
@@ -367,21 +360,13 @@ namespace PerfilAlumno.ViewModels
 
         private async Task VerDetalle()
         {
-            if (string.IsNullOrWhiteSpace(Nombre))
+            var error = _service.ObtenerErrorValidacion(perfil);
+
+            if (error != null)
             {
                 await Application.Current!.MainPage!.DisplayAlert(
                     "Error",
-                    "Debe ingresar un nombre antes de continuar.",
-                    "Aceptar");
-
-                return;
-            }
-
-            if (Edad <= 0)
-            {
-                await Application.Current!.MainPage!.DisplayAlert(
-                    "Error",
-                    "La edad debe ser mayor a 0.",
+                    error,
                     "Aceptar");
 
                 return;

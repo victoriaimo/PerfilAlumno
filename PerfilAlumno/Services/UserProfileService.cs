@@ -12,10 +12,24 @@ namespace PerfilAlumno.Services
             _repository = repository;
         }
 
+        public string? ObtenerErrorValidacion(UserProfile perfil)
+        {
+            if (string.IsNullOrWhiteSpace(perfil.Nombre))
+            {
+                return "El nombre no puede estar vacío.";
+            }
+
+            if (perfil.Edad <= 0)
+            {
+                return "La edad debe ser mayor a 0.";
+            }
+
+            return null;
+        }
+
         public bool ValidarPerfil(UserProfile perfil)
         {
-            return !string.IsNullOrWhiteSpace(perfil.Nombre)
-                && perfil.Edad > 0;
+            return ObtenerErrorValidacion(perfil) == null;
         }
 
         public async Task<bool> GuardarPerfilAsync(UserProfile perfil)
