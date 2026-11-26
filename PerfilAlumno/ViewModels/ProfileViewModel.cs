@@ -12,6 +12,7 @@ namespace PerfilAlumno.ViewModels
     {
         private UserProfile perfil;
         private readonly UserProfileService _service;
+        private string _datosAcelerometro = "Acelerómetro detenido";
 
         public ProfileViewModel(UserProfileService service)
         {
@@ -30,6 +31,8 @@ namespace PerfilAlumno.ViewModels
             VerUsuariosCommand = new Command(async () => await VerUsuarios());
             TomarFotoCommand = new Command(async () => await TomarFoto());
             ObtenerUbicacionCommand = new Command(async () => await ObtenerUbicacion());
+            IniciarAcelerometroCommand = new Command(async () => await IniciarAcelerometro());
+            DetenerAcelerometroCommand = new Command(DetenerAcelerometro);
         }
 
         public async Task CargarPerfilAsync()
@@ -87,11 +90,96 @@ namespace PerfilAlumno.ViewModels
             }
         }
 
+        public string DatosAcelerometro
+        {
+            get => _datosAcelerometro;
+            set
+            {
+                _datosAcelerometro = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand GuardarCommand { get; }
         public ICommand VerDetalleCommand { get; }
         public ICommand VerUsuariosCommand { get; }
         public ICommand TomarFotoCommand { get; }
         public ICommand ObtenerUbicacionCommand { get; }
+        public ICommand IniciarAcelerometroCommand { get; }
+        public ICommand DetenerAcelerometroCommand { get; }
+
+        private async Task IniciarAcelerometro()
+        {
+            try
+            {
+                if (!Accelerometer.Default.IsSupported)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Acelerómetro",
+                        "El dispositivo no dispone de acelerómetro.",
+                        "Aceptar");
+
+                    return;
+                }
+
+                if (!Accelerometer.Default.IsMonitoring)
+                {
+                    Accelerometer.Default.ReadingChanged += AcelerometroReadingChanged;
+
+                    Accelerometer.Default.Start(SensorSpeed.UI);
+
+                    DatosAcelerometro = "Acelerómetro iniciado";
+                }
+            }
+            catch (Exception)
+            {
+                Accelerometer.Default.ReadingChanged -= AcelerometroReadingChanged;
+
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "No se pudo iniciar el acelerómetro.",
+                    "Aceptar");
+            }
+        }
+
+        private void AcelerometroReadingChanged(
+            object? sender,
+            AccelerometerChangedEventArgs e)
+        {
+            var aceleracion = e.Reading.Acceleration;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (Accelerometer.Default.IsMonitoring)
+                {
+                    DatosAcelerometro =
+                        $"X: {aceleracion.X:F2}\n" +
+                        $"Y: {aceleracion.Y:F2}\n" +
+                        $"Z: {aceleracion.Z:F2}";
+                }
+            });
+        }
+
+        public void DetenerAcelerometro()
+        {
+            try
+            {
+                if (Accelerometer.Default.IsMonitoring)
+                {
+                    Accelerometer.Default.Stop();
+                }
+
+                DatosAcelerometro = "Acelerómetro detenido";
+            }
+            catch (Exception)
+            {
+                DatosAcelerometro = "No se pudo detener el acelerómetro.";
+            }
+            finally
+            {
+                Accelerometer.Default.ReadingChanged -= AcelerometroReadingChanged;
+            }
+        }
 
         private async Task ObtenerUbicacion()
         {

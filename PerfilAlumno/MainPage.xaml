@@ -128,6 +128,32 @@
                         CornerRadius="12" />
 
                     <Button
+                        Text="Iniciar acelerómetro"
+                        Command="{Binding IniciarAcelerometroCommand}"
+                        BackgroundColor="#475569"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="12" />
+
+                    <Label
+                        Text="{Binding DatosAcelerometro}"
+                        FontSize="16"
+                        TextColor="#374151"
+                        HorizontalTextAlignment="Center" />
+
+                    <Button
+                        Text="Detener acelerómetro"
+                        Command="{Binding DetenerAcelerometroCommand}"
+                        BackgroundColor="#DC2626"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="12" />
+
+                    <Button
                         Text="Guardar perfil"
                         Command="{Binding GuardarCommand}"
                         BackgroundColor="#2563EB"
