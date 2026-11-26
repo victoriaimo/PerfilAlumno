@@ -9,36 +9,61 @@ namespace PerfilAlumno.Repositories
 
         public UserProfileRepositorySQLite()
         {
-            var dbPath = Path.Combine(
+            var ruta = Path.Combine(
                 FileSystem.AppDataDirectory,
                 "perfilalumno.db3");
 
-            _database = new SQLiteAsyncConnection(dbPath);
+            _database = new SQLiteAsyncConnection(ruta);
         }
 
         public async Task<UserProfile?> ObtenerPerfilAsync()
         {
-            await _database.CreateTableAsync<UserProfile>();
+            await _database.CreateTableAsync<UserProfileEntity>();
 
-            return await _database.Table<UserProfile>()
+            var entidad = await _database
+                .Table<UserProfileEntity>()
                 .FirstOrDefaultAsync();
+
+            if (entidad == null)
+                return null;
+
+            return new UserProfile
+            {
+                Id = entidad.Id,
+                Nombre = entidad.Nombre,
+                Edad = entidad.Edad,
+                Descripcion = entidad.Descripcion,
+                ImagenPerfil = entidad.ImagenPerfil
+            };
         }
 
         public async Task GuardarPerfilAsync(UserProfile perfil)
         {
-            await _database.CreateTableAsync<UserProfile>();
+            await _database.CreateTableAsync<UserProfileEntity>();
 
-            var existente = await ObtenerPerfilAsync();
+            var existente = await _database
+                .Table<UserProfileEntity>()
+                .FirstOrDefaultAsync();
+
+            var entidad = new UserProfileEntity
+            {
+                Nombre = perfil.Nombre,
+                Edad = perfil.Edad,
+                Descripcion = perfil.Descripcion,
+                ImagenPerfil = perfil.ImagenPerfil
+            };
 
             if (existente == null)
             {
-                await _database.InsertAsync(perfil);
+                await _database.InsertAsync(entidad);
             }
             else
             {
-                perfil.Id = existente.Id;
-                await _database.UpdateAsync(perfil);
+                entidad.Id = existente.Id;
+                await _database.UpdateAsync(entidad);
             }
+
+            perfil.Id = entidad.Id;
         }
     }
 }

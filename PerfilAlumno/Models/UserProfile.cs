@@ -1,10 +1,7 @@
-﻿using SQLite;
-
-namespace PerfilAlumno.Models
+﻿namespace PerfilAlumno.Models
 {
     public class UserProfile
     {
-        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         public string Nombre { get; set; } = "";
