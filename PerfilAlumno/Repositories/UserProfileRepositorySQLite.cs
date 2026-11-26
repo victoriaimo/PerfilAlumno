@@ -7,12 +7,8 @@ namespace PerfilAlumno.Repositories
     {
         private readonly SQLiteAsyncConnection _database;
 
-        public UserProfileRepositorySQLite()
+        public UserProfileRepositorySQLite(string ruta)
         {
-            var ruta = Path.Combine(
-                FileSystem.AppDataDirectory,
-                "perfilalumno.db3");
-
             _database = new SQLiteAsyncConnection(ruta);
         }
 

@@ -24,6 +24,8 @@
 		<Compile Include="..\PerfilAlumno\Repositories\IUserProfileRepository.cs" />
 		<Compile Include="..\PerfilAlumno\Repositories\FakeUserProfileRepository.cs" />
 		<Compile Include="..\PerfilAlumno\Services\UserProfileService.cs" />
+		<Compile Include="..\PerfilAlumno\Repositories\UserProfileEntity.cs" />
+		<Compile Include="..\PerfilAlumno\Repositories\UserProfileRepositorySQLite.cs" />
 	</ItemGroup>
 
 </Project>

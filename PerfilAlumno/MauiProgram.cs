@@ -26,7 +26,11 @@ namespace PerfilAlumno
                 });
 
             builder.Services.AddSingleton<HttpClient>();
-            builder.Services.AddSingleton<IUserProfileRepository, UserProfileRepositorySQLite>();
+
+            builder.Services.AddSingleton<IUserProfileRepository>(sp =>
+                new UserProfileRepositorySQLite(
+                    Path.Combine(FileSystem.AppDataDirectory, "perfilalumno.db3")));
+
             builder.Services.AddTransient<UserProfileService>();
             builder.Services.AddTransient<ProfileViewModel>();
             builder.Services.AddTransient<MainPage>();
