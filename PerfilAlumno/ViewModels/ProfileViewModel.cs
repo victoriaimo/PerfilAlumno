@@ -28,6 +28,7 @@ namespace PerfilAlumno.ViewModels
             GuardarCommand = new Command(async () => await Guardar());
             VerDetalleCommand = new Command(async () => await VerDetalle());
             VerUsuariosCommand = new Command(async () => await VerUsuarios());
+            TomarFotoCommand = new Command(async () => await TomarFoto());
         }
 
         public async Task CargarPerfilAsync()
@@ -88,6 +89,65 @@ namespace PerfilAlumno.ViewModels
         public ICommand GuardarCommand { get; }
         public ICommand VerDetalleCommand { get; }
         public ICommand VerUsuariosCommand { get; }
+        public ICommand TomarFotoCommand { get; }
+
+        private async Task TomarFoto()
+        {
+            try
+            {
+                if (!MediaPicker.Default.IsCaptureSupported)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Cámara",
+                        "La cámara no está disponible en este dispositivo.",
+                        "Aceptar");
+
+                    return;
+                }
+
+                var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+
+                if (status != PermissionStatus.Granted)
+                {
+                    status = await Permissions.RequestAsync<Permissions.Camera>();
+                }
+
+                if (status != PermissionStatus.Granted)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Permiso denegado",
+                        "Debe autorizar el acceso a la cámara.",
+                        "Aceptar");
+
+                    return;
+                }
+
+                var foto = await MediaPicker.Default.CapturePhotoAsync();
+
+                if (foto != null)
+                {
+                    var ruta = Path.Combine(
+                        FileSystem.AppDataDirectory,
+                        Guid.NewGuid().ToString() + Path.GetExtension(foto.FileName));
+
+                    using var origen = await foto.OpenReadAsync();
+
+                    using (var destino = File.OpenWrite(ruta))
+                    {
+                        await origen.CopyToAsync(destino);
+                    }
+
+                    ImagenPerfil = ruta;
+                }
+            }
+            catch (Exception)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "No se pudo capturar la fotografía.",
+                    "Aceptar");
+            }
+        }
 
         private async Task Guardar()
         {

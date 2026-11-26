@@ -57,6 +57,16 @@
 
                     </Border>
 
+                    <Button
+                        Text="Tomar foto"
+                        Command="{Binding TomarFotoCommand}"
+                        BackgroundColor="#475569"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="12" />
+
                     <Label
                         Text="Imagen de perfil"
                         FontAttributes="Bold"
