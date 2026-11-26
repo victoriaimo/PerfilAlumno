@@ -45,10 +45,12 @@ jobs:
           - platform: android
             framework: net9.0-android
             workload: maui-android
+            runtime: ''
 
           - platform: windows
             framework: net9.0-windows10.0.19041.0
             workload: maui-windows
+            runtime: '-r win-x64'
 
     steps:
       - name: Obtener codigo fuente
@@ -69,13 +71,13 @@ jobs:
         run: dotnet workload install ${{ matrix.workload }}
 
       - name: Restaurar dependencias
-        run: dotnet restore PerfilAlumno/PerfilAlumno.csproj -p:TargetFrameworks=${{ matrix.framework }}
+        run: dotnet restore PerfilAlumno/PerfilAlumno.csproj -p:Configuration=Release -p:TargetFrameworks=${{ matrix.framework }} ${{ matrix.runtime }}
 
       - name: Compilar aplicacion
-        run: dotnet build PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} --no-restore
+        run: dotnet build PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} ${{ matrix.runtime }} --no-restore
 
       - name: Publicar aplicacion
-        run: dotnet publish PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} -o output/${{ matrix.platform }}
+        run: dotnet publish PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} ${{ matrix.runtime }} -o output/${{ matrix.platform }}
 
       - name: Guardar artefactos
         uses: actions/upload-artifact@v4
