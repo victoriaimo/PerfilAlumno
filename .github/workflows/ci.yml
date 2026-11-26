@@ -1,0 +1,83 @@
+name: CI-CD PerfilAlumno
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  testing:
+    runs-on: windows-latest
+
+    steps:
+      - name: Obtener codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache de NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-tests-${{ hashFiles('**/*.csproj') }}
+
+      - name: Restaurar dependencias
+        run: dotnet restore PerfilAlumno.Tests/PerfilAlumno.Tests.csproj
+
+      - name: Compilar pruebas
+        run: dotnet build PerfilAlumno.Tests/PerfilAlumno.Tests.csproj -c Release --no-restore
+
+      - name: Ejecutar pruebas
+        run: dotnet test PerfilAlumno.Tests/PerfilAlumno.Tests.csproj -c Release --no-build --verbosity normal
+
+  build:
+    needs: testing
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        include:
+          - platform: android
+            framework: net9.0-android
+            workload: maui-android
+
+          - platform: windows
+            framework: net9.0-windows10.0.19041.0
+            workload: maui-windows
+
+    steps:
+      - name: Obtener codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache de NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
+
+      - name: Instalar workload MAUI
+        run: dotnet workload install ${{ matrix.workload }}
+
+      - name: Restaurar dependencias
+        run: dotnet restore PerfilAlumno/PerfilAlumno.csproj -p:TargetFrameworks=${{ matrix.framework }}
+
+      - name: Compilar aplicacion
+        run: dotnet build PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} --no-restore
+
+      - name: Publicar aplicacion
+        run: dotnet publish PerfilAlumno/PerfilAlumno.csproj -c Release -f ${{ matrix.framework }} -p:TargetFrameworks=${{ matrix.framework }} -o output/${{ matrix.platform }}
+
+      - name: Guardar artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: PerfilAlumno-${{ matrix.platform }}
+          path: output/${{ matrix.platform }}/
