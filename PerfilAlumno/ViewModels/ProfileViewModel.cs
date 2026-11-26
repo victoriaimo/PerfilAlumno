@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PerfilAlumno.Models;
 using PerfilAlumno.Views;
-using PerfilAlumno.Repositories;
+using PerfilAlumno.Services;
 using CommunityToolkit.Maui.Alerts;
 
 namespace PerfilAlumno.ViewModels
@@ -11,11 +11,11 @@ namespace PerfilAlumno.ViewModels
     public class ProfileViewModel : INotifyPropertyChanged
     {
         private UserProfile perfil;
-        private readonly IUserProfileRepository _repository;
+        private readonly UserProfileService _service;
 
-        public ProfileViewModel(IUserProfileRepository repository)
+        public ProfileViewModel(UserProfileService service)
         {
-            _repository = repository;
+            _service = service;
 
             perfil = new UserProfile
             {
@@ -32,7 +32,7 @@ namespace PerfilAlumno.ViewModels
 
         public async Task CargarPerfilAsync()
         {
-            var perfilGuardado = await _repository.ObtenerPerfilAsync();
+            var perfilGuardado = await _service.ObtenerPerfilAsync();
 
             if (perfilGuardado != null)
             {
@@ -113,7 +113,8 @@ namespace PerfilAlumno.ViewModels
 
             try
             {
-                await _repository.GuardarPerfilAsync(perfil);
+                if (!await _service.GuardarPerfilAsync(perfil))
+                    return;
 
                 await Application.Current!.MainPage!.DisplayAlert(
                     "Perfil",

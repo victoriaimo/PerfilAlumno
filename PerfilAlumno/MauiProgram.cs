@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PerfilAlumno.ViewModels;
 using PerfilAlumno.Views;
 using PerfilAlumno.Repositories;
+using PerfilAlumno.Services;
 
 namespace PerfilAlumno
 {
@@ -26,6 +27,7 @@ namespace PerfilAlumno
 
             builder.Services.AddSingleton<HttpClient>();
             builder.Services.AddSingleton<IUserProfileRepository, UserProfileRepositorySQLite>();
+            builder.Services.AddTransient<UserProfileService>();
             builder.Services.AddTransient<ProfileViewModel>();
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<UsuariosViewModel>();
