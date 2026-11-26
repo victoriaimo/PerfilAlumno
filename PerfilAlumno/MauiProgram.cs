@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using PerfilAlumno.ViewModels;
+using PerfilAlumno.Views;
 
 namespace PerfilAlumno
 {
@@ -20,6 +22,10 @@ namespace PerfilAlumno
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddTransient<UsuariosViewModel>();
+            builder.Services.AddTransient<UsuariosPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

@@ -4,9 +4,9 @@ namespace PerfilAlumno.Views;
 
 public partial class UsuariosPage : ContentPage
 {
-    public UsuariosPage()
+    public UsuariosPage(UsuariosViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = new UsuariosViewModel();
+        BindingContext = viewModel;
     }
 }

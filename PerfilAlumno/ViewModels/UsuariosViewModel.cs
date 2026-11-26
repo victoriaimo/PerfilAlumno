@@ -30,9 +30,9 @@ namespace PerfilAlumno.ViewModels
         public ICommand CargarUsuariosCommand { get; }
         public ICommand VerDetalleUsuarioCommand { get; }
 
-        public UsuariosViewModel()
+        public UsuariosViewModel(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
+            _httpClient = httpClient;
 
             CargarUsuariosCommand =
                 new Command(async () => await CargarUsuariosAsync());
