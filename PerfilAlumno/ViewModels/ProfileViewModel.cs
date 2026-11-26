@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PerfilAlumno.Models;
 using PerfilAlumno.Views;
+using PerfilAlumno.Repositories;
 using CommunityToolkit.Maui.Alerts;
 
 namespace PerfilAlumno.ViewModels
@@ -10,9 +11,12 @@ namespace PerfilAlumno.ViewModels
     public class ProfileViewModel : INotifyPropertyChanged
     {
         private UserProfile perfil;
+        private readonly IUserProfileRepository _repository;
 
-        public ProfileViewModel()
+        public ProfileViewModel(IUserProfileRepository repository)
         {
+            _repository = repository;
+
             perfil = new UserProfile
             {
                 Nombre = "Victoria",
@@ -21,9 +25,24 @@ namespace PerfilAlumno.ViewModels
                 ImagenPerfil = "dotnet_bot.png"
             };
 
-            GuardarCommand = new Command(Guardar);
+            GuardarCommand = new Command(async () => await Guardar());
             VerDetalleCommand = new Command(async () => await VerDetalle());
             VerUsuariosCommand = new Command(async () => await VerUsuarios());
+        }
+
+        public async Task CargarPerfilAsync()
+        {
+            var perfilGuardado = await _repository.ObtenerPerfilAsync();
+
+            if (perfilGuardado != null)
+            {
+                perfil = perfilGuardado;
+
+                OnPropertyChanged(nameof(Nombre));
+                OnPropertyChanged(nameof(Edad));
+                OnPropertyChanged(nameof(Descripcion));
+                OnPropertyChanged(nameof(ImagenPerfil));
+            }
         }
 
         public string Nombre
@@ -70,7 +89,7 @@ namespace PerfilAlumno.ViewModels
         public ICommand VerDetalleCommand { get; }
         public ICommand VerUsuariosCommand { get; }
 
-        private async void Guardar()
+        private async Task Guardar()
         {
             if (string.IsNullOrWhiteSpace(Nombre))
             {
@@ -82,10 +101,32 @@ namespace PerfilAlumno.ViewModels
                 return;
             }
 
-            await Application.Current!.MainPage!.DisplayAlert(
-                "Perfil",
-                "Los datos fueron guardados correctamente.",
-                "Aceptar");
+            if (Edad <= 0)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "La edad debe ser mayor a 0.",
+                    "Aceptar");
+
+                return;
+            }
+
+            try
+            {
+                await _repository.GuardarPerfilAsync(perfil);
+
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Perfil",
+                    "Los datos fueron guardados correctamente.",
+                    "Aceptar");
+            }
+            catch (Exception)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "No se pudo guardar el perfil.",
+                    "Aceptar");
+            }
         }
 
         private async Task VerDetalle()

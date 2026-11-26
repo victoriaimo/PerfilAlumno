@@ -4,11 +4,21 @@ namespace PerfilAlumno
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private readonly ProfileViewModel _viewModel;
+
+        public MainPage(ProfileViewModel viewModel)
         {
             InitializeComponent();
 
-            BindingContext = new ProfileViewModel();
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            await _viewModel.CargarPerfilAsync();
         }
     }
 }
