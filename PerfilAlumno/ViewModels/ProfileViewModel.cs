@@ -29,6 +29,7 @@ namespace PerfilAlumno.ViewModels
             VerDetalleCommand = new Command(async () => await VerDetalle());
             VerUsuariosCommand = new Command(async () => await VerUsuarios());
             TomarFotoCommand = new Command(async () => await TomarFoto());
+            ObtenerUbicacionCommand = new Command(async () => await ObtenerUbicacion());
         }
 
         public async Task CargarPerfilAsync()
@@ -90,6 +91,81 @@ namespace PerfilAlumno.ViewModels
         public ICommand VerDetalleCommand { get; }
         public ICommand VerUsuariosCommand { get; }
         public ICommand TomarFotoCommand { get; }
+        public ICommand ObtenerUbicacionCommand { get; }
+
+        private async Task ObtenerUbicacion()
+        {
+            try
+            {
+                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+                if (status != PermissionStatus.Granted)
+                {
+                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                }
+
+                if (status != PermissionStatus.Granted)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Permiso denegado",
+                        "Debe autorizar el acceso a la ubicación.",
+                        "Aceptar");
+
+                    return;
+                }
+
+                var request = new GeolocationRequest(
+                    GeolocationAccuracy.High,
+                    TimeSpan.FromSeconds(10));
+
+                var ubicacion = await Geolocation.GetLocationAsync(request);
+
+                if (ubicacion != null)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Ubicación actual",
+                        $"Latitud: {ubicacion.Latitude}\n" +
+                        $"Longitud: {ubicacion.Longitude}\n" +
+                        $"Precisión: {ubicacion.Accuracy} metros",
+                        "Aceptar");
+                }
+                else
+                {
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Ubicación",
+                        "No se pudo obtener la ubicación actual.",
+                        "Aceptar");
+                }
+            }
+            catch (FeatureNotSupportedException)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "GPS",
+                    "El GPS no está disponible en este dispositivo.",
+                    "Aceptar");
+            }
+            catch (FeatureNotEnabledException)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "GPS",
+                    "Debe activar la ubicación del dispositivo.",
+                    "Aceptar");
+            }
+            catch (PermissionException)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Permiso denegado",
+                    "No se autorizó el acceso a la ubicación.",
+                    "Aceptar");
+            }
+            catch (Exception)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    "No se pudo obtener la ubicación.",
+                    "Aceptar");
+            }
+        }
 
         private async Task TomarFoto()
         {

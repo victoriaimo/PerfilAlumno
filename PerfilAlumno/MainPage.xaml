@@ -118,6 +118,16 @@
                         PlaceholderColor="#9CA3AF" />
 
                     <Button
+                        Text="Obtener ubicación"
+                        Command="{Binding ObtenerUbicacionCommand}"
+                        BackgroundColor="#0891B2"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="12" />
+
+                    <Button
                         Text="Guardar perfil"
                         Command="{Binding GuardarCommand}"
                         BackgroundColor="#2563EB"

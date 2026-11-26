@@ -37,5 +37,8 @@
     <key>NSCameraUsageDescription</key>
     <string>La aplicación necesita acceder a la cámara para tomar una foto de perfil.</string>
 
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>La aplicación necesita acceder a la ubicación del dispositivo.</string>
+
 </dict>
 </plist>
